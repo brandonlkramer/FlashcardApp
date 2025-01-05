@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let notLearnedWords = [...words];
     let currentWord = null;
     let participantNumber = null;
+    let iterationCount = 0; // Track the number of iterations
+    let studyData = []; // Array to store study data
 
     console.log("JavaScript is working!");
     console.log("Words:", words);
@@ -122,23 +124,26 @@ function shuffle(array) {
             // Reset the data for future study sessions
             notLearnedWords = [...words];
             currentWord = null;
+            iterationCount = 0;
     
             return; // Exit the function to prevent further execution
         } else {
-    
-        // Continue to the next word if available
-        currentWord = notLearnedWords.shift();
-        console.log("Loaded next word:", currentWord);
-    
-        // Update the prompt text
-        promptDiv.textContent = studyMode === "e2j" ? currentWord.word : currentWord.definition;
-    
-        // Ensure correct screen visibility
-        studyScreen.classList.remove("hidden");
-        studyScreen.classList.add("active");
-        answerScreen.classList.remove("active");
-        answerScreen.classList.add("hidden");
-        }
+        
+            iterationCount++;
+            
+            // Continue to the next word if available
+            currentWord = notLearnedWords.shift();
+            console.log("Loaded next word:", currentWord);
+        
+            // Update the prompt text
+            promptDiv.textContent = studyMode === "e2j" ? currentWord.word : currentWord.definition;
+        
+            // Ensure correct screen visibility
+            studyScreen.classList.remove("hidden");
+            studyScreen.classList.add("active");
+            answerScreen.classList.remove("active");
+            answerScreen.classList.add("hidden");
+            }
     }
     
 
@@ -199,16 +204,16 @@ function shuffle(array) {
     
     function markAsKnown(known) {
         const timestamp = new Date().toISOString();
-        const studyEntry = {
+        studyData.push({
             participant: participantNumber,
-            date: timestamp.split("T")[0],
-            time: timestamp.split("T")[1],
+            date: timestamp.split("T")[0], // Extract the date
+            time: timestamp.split("T")[1], // Extract the time
             word: currentWord.word,
             definition: currentWord.definition,
             iteration: iterationCount,
             learned: known ? "known" : "unknown",
             direction: studyMode,
-        };
+        });
         // If the word is not known, push it back to the list
         if (!known) {
             notLearnedWords.push(currentWord);
