@@ -109,7 +109,10 @@ function shuffle(array) {
     function loadNextWord() {
         if (notLearnedWords.length === 0) {
             alert("All words reviewed!");
-    
+            // Save study data to the server at the end of the session
+            console.log("Saving data to server:", studyData);
+            saveDataToServer(studyData);
+            
             answerScreen.classList.remove("active");
             answerScreen.classList.add("hidden");
             studyScreen.classList.remove("active");
@@ -183,7 +186,8 @@ function shuffle(array) {
     }
     
     function saveDataToServer(data) {
-        fetch("https://flashcard-backend-6wci.onrender.com", {
+        console.log("Saving data to server:", data);
+        fetch("https://flashcard-backend-6wci.onrender.com/log-data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
