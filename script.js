@@ -130,6 +130,7 @@ function shuffle(array) {
         } else {
         
             iterationCount++;
+            console.log("Current Iteration Count:", iterationCount);
             
             // Continue to the next word if available
             currentWord = notLearnedWords.shift();
@@ -204,6 +205,11 @@ function shuffle(array) {
     
     function markAsKnown(known) {
         const timestamp = new Date().toISOString();
+        if (typeof iterationCount === "undefined" || iterationCount === null) {
+            console.error("Error: iterationCount is not defined or initialized.");
+            return;
+        }
+        
         studyData.push({
             participant: participantNumber,
             date: timestamp.split("T")[0], // Extract the date
