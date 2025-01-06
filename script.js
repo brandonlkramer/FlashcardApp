@@ -1,4 +1,23 @@
+
 document.addEventListener("DOMContentLoaded", () => {
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyA9FVkm0z8nbmDCiND1xlKpOXeEObwBCJY",
+        authDomain: "vocab-review-app.firebaseapp.com",
+        projectId: "vocab-review-app",
+        storageBucket: "vocab-review-app.firebasestorage.app",
+        messagingSenderId: "66602586657",
+        appId: "1:66602586657:web:f0097f216ddfb7464f0960",
+        measurementId: "G-F7F23VKHC8"
+      };
+      
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Get Firestore instance
+    const db = firebase.firestore();
+    console.log("Firebase and Firestore initialized:", db);
+    
     // Variables
     const words = [
         { word: "Apple", definition: "A fruit" },
