@@ -205,24 +205,17 @@ function shuffle(array) {
     }
     
     function saveDataToServer(data) {
-        console.log("Saving data to server:", data);
-        fetch("https://flashcard-backend-6wci.onrender.com/log-data", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => {
-                if (response.ok) {
-                    console.log("Data saved successfully.");
-                } else {
-                    console.error("Failed to save data.");
-                }
-            })
-            .catch((error) => {
-                console.error("Error saving data:", error);
-            });
+        const db = firebase.firestore();
+        data.forEach(entry => {
+            db.collection("study_data")
+                .add(entry)
+                .then(() => {
+                    console.log("Data saved to Firebase:", entry);
+                })
+                .catch((error) => {
+                    console.error("Error saving to Firebase:", error);
+                });
+        });
     }
     
     
