@@ -11,6 +11,11 @@ firebase-debug.*.log*
 .firebase/
 
 # Firebase config
+vocab-review-app-1a54293d546d.json
+firebaseConfig.json
+
+# Firebase data saved files
+FirestoreData/
 
 # Uncomment this if you'd like others to create their own Firebase project.
 # For a team working on the same Firebase project(s), it is recommended to leave
