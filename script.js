@@ -1,17 +1,19 @@
-document.addEventListener("DOMContentLoaded", async () => {
-    // Path to your Firebase configuration file
-    const firebaseConfigPath = './firebaseConfig.json';
+document.addEventListener("DOMContentLoaded", () => {
+    const firebaseConfig = {
+        apiKey: "AIzaSyA9FVkm0z8nbmDCiND1xlKpOXeEObwBCJY",
+        authDomain: "vocab-review-app.firebaseapp.com",
+        projectId: "vocab-review-app",
+        storageBucket: "vocab-review-app.firebasestorage.app",
+        messagingSenderId: "66602586657",
+        appId: "1:66602586657:web:f0097f216ddfb7464f0960",
+        measurementId: "G-F7F23VKHC8"
+      };
   
-    // Fetch Firebase configuration from the JSON file
-    const response = await fetch(firebaseConfigPath);
-    const firebaseConfig = await response.json();
-  
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
   
-    // Get Firestore instance
     const db = firebase.firestore();
-    console.log("Firebase and Firestore initialized:", db); 
+    console.log("Firebase and Firestore initialized:", db);
+  
     
     // Variables
     const words = [
