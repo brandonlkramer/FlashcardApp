@@ -15,9 +15,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Variables
     const words = [
-        { word: "Apple", definition: "A fruit" },
-        { word: "Car", definition: "A vehicle" },
-        { word: "Computer", definition: "An electronic device" }
+        { word: "ADVERN", definition: "さまざまな建設業界で使用されている多用途のこぎりです。" },
+        { word: "BEACOS", definition: "副鼻腔炎。" },
+        { word: "BOCKLE", definition: "各種工事の支持角度の測定・確認。 " },
+        { word: "EMBACK", definition: "雨よけとして機能するベランダや玄関の屋根。 " },
+        { word: "EVOTIC", definition: "この言葉は、めまいがして非常に衰弱している状態を表します。全身麻酔後にゆっくりと意識が回復する患者の状態を表すのによく使用されます。" },
+        { word: "SLOBES", definition: "歪んだ視界を矯正する特殊なレンズ。" },
+        { word: "INJENT", definition: "患者の病気の性質を判断する。面接、検査、健康診断、その他の手続きを通じて。" },
+        { word: "WOCKEY", definition: "歯の上部に装着する人工の義歯または被せ物。" },
+        { word: "JEKING", definition: "この言葉は一時的に痛みを感じなくなる状態を表します。" },
+        { word: "RECIBE", definition: "溝とシャベルを使用して、明確に定義されたエリアの土や浮石を除去します。" },
+        { word: "TOTATE", definition: "光を反射する金属または人工のコーティングでガラスを処理して不透明にすること。" },
+        { word: "PERIAL", definition: "病院で、特に長期間の人工呼吸が必要な場合に呼吸を維持するために使用される装置。" },
+        { word: "SURMIT", definition: "無限軌道シャーシまたは大きな車輪と、土や瓦礫を移動するための大きなシャベルまたはスプーンを備えた建設車両。 " },
+        { word: "TAINOR", definition: "建築業者や経験豊富な建設作業員をさまざまな方法で支援することを仕事とする、資格のない労働者。" }
     ];
     let studyMode = "e2j"; // Default study mode
     let notLearnedWords = [...words];
