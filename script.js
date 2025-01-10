@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { word: "SURMIT", definition: "無限軌道シャーシまたは大きな車輪と、土や瓦礫を移動するための大きなシャベルまたはスプーンを備えた建設車両。 " },
         { word: "TAINOR", definition: "建築業者や経験豊富な建設作業員をさまざまな方法で支援することを仕事とする、資格のない労働者。" }
     ];
-    let studyMode = "e2j"; // Default study mode
+    let studyMode = "meaningRecall"; // Default study mode
     let notLearnedWords = [...words];
     let currentWord = null;
     let participantNumber = null;
@@ -75,12 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.getElementById("review-words").addEventListener("click", () => {
         console.log("Review Words button clicked");
-        startStudy("e2j");
+        startStudy("meaningRecall");
     });
 
     document.getElementById("review-meanings").addEventListener("click", () => {
         console.log("Review Meanings button clicked");
-        startStudy("j2e");
+        startStudy("formRecall");
     });
 
     document.getElementById("finish").addEventListener("click", () => {
@@ -114,68 +114,77 @@ function shuffle(array) {
 }
 
 
-    function startStudy(mode) {
-        console.log("Starting study in mode:", mode);
-        studyMode = mode;
-
-        // Shuffle the notLearnedWords array
-        notLearnedWords = shuffle([...words]);
-        console.log("Shuffled words:", notLearnedWords);
-
-        // Hide the welcome screen
-        welcomeScreen.classList.add("hidden");
-        welcomeScreen.classList.remove("active");
-
-        // Show the study screen
-        studyScreen.classList.remove("hidden");
-        studyScreen.classList.add("active");
-
-        loadNextWord();
+function startStudy(mode) {
+    console.log("Starting study in mode:", mode);
+    studyMode = mode;
+  
+    // Shuffle the notLearnedWords array
+    notLearnedWords = shuffle([...words]);
+    console.log("Shuffled words:", notLearnedWords);
+  
+    // Update the study header text based on the mode
+    const studyHeader = document.getElementById("study-header");
+    if (studyMode === "meaningRecall") {
+      studyHeader.textContent = "What does this word mean?";
+    } else if (studyMode === "formRecall") {
+      studyHeader.textContent = "What word best matches this meaning?";
     }
+  
+    // Hide the welcome screen
+    welcomeScreen.classList.add("hidden");
+    welcomeScreen.classList.remove("active");
+  
+    // Show the study screen
+    studyScreen.classList.remove("hidden");
+    studyScreen.classList.add("active");
+  
+    loadNextWord();
+  }
+  
 
     function loadNextWord() {
         if (notLearnedWords.length === 0) {
-            alert("All words reviewed!");
-            // Save study data to the server at the end of the session
-            console.log("Saving data to server:", studyData);
-            saveDataToServer(studyData);
-            
-            answerScreen.classList.remove("active");
-            answerScreen.classList.add("hidden");
-            studyScreen.classList.remove("active");
-            studyScreen.classList.add("hidden");
-            welcomeScreen.classList.remove("hidden");
-            welcomeScreen.classList.add("active");
-    
-            // Show only the welcome screen
-            welcomeScreen.classList.remove("active", "hidden"); // Reset all potential classes
-            welcomeScreen.classList.add("active"); // Ensure it's active and visible
-        
-            // Reset the data for future study sessions
-            notLearnedWords = [...words];
-            currentWord = null;
-            iterationCount = 0;
-    
-            return; // Exit the function to prevent further execution
-        } else {
-        
-            iterationCount++;
-            console.log("Current Iteration Count:", iterationCount);
-            
-            // Continue to the next word if available
-            currentWord = notLearnedWords.shift();
-            console.log("Loaded next word:", currentWord);
-        
-            // Update the prompt text
-            promptDiv.textContent = studyMode === "e2j" ? currentWord.word : currentWord.definition;
-        
-            // Ensure correct screen visibility
-            studyScreen.classList.remove("hidden");
-            studyScreen.classList.add("active");
-            answerScreen.classList.remove("active");
-            answerScreen.classList.add("hidden");
-            }
-    }
+          alert("All words reviewed!");
+          console.log("Saving data to server:", studyData);
+          saveDataToServer(studyData);
+      
+          // Reset screens
+          answerScreen.classList.remove("active");
+          answerScreen.classList.add("hidden");
+          studyScreen.classList.remove("active");
+          studyScreen.classList.add("hidden");
+          welcomeScreen.classList.remove("hidden");
+          welcomeScreen.classList.add("active");
+      
+          // Reset data for future study sessions
+          notLearnedWords = [...words];
+          currentWord = null;
+          iterationCount = 0;
+          return;
+        }
+      
+        iterationCount++;
+        console.log("Current Iteration Count:", iterationCount);
+      
+        // Load the next word
+        currentWord = notLearnedWords.shift();
+        console.log("Loaded next word:", currentWord);
+      
+        // Update the prompt text dynamically
+        if (studyMode === "meaningRecall") {
+          promptDiv.textContent = currentWord.word; // Display the word
+        } else if (studyMode === "formRecall") {
+          promptDiv.textContent = currentWord.definition; // Display the definition
+        }
+      
+        // Show the study screen
+        studyScreen.classList.remove("hidden");
+        studyScreen.classList.add("active");
+        answerScreen.classList.remove("active");
+        answerScreen.classList.add("hidden");
+      }
+      
+      
     
 
     function showAnswer() {
@@ -187,7 +196,7 @@ function shuffle(array) {
         }
     
         // Set the answer content
-        answerDiv.textContent = studyMode === "e2j" ? currentWord.definition : currentWord.word;
+        answerDiv.textContent = studyMode === "meaningRecall" ? currentWord.definition : currentWord.word;
       
         // Transition screens
         studyScreen.classList.remove("active");
@@ -215,43 +224,68 @@ function shuffle(array) {
     function saveDataToServer(data) {
         const db = firebase.firestore();
         data.forEach(entry => {
-            db.collection("study_data")
-                .add(entry)
-                .then(() => {
-                    console.log("Data saved to Firebase:", entry);
-                })
-                .catch((error) => {
-                    console.error("Error saving to Firebase:", error);
-                });
+          db.collection("study_data")
+            .add({
+              ...entry,
+              language: "English" // Add the language field
+            })
+            .then(() => {
+              console.log("Data saved to Firebase:", entry);
+            })
+            .catch((error) => {
+              console.error("Error saving to Firebase:", error);
+            });
         });
-    }
+      }
+      
     
     
     function markAsKnown(known) {
-        const timestamp = new Date().toISOString();
-        if (typeof iterationCount === "undefined" || iterationCount === null) {
-            console.error("Error: iterationCount is not defined or initialized.");
-            return;
-        }
+        const now = new Date();
         
-        studyData.push({
-            participant: participantNumber,
-            date: timestamp.split("T")[0], // Extract the date
-            time: timestamp.split("T")[1], // Extract the time
-            word: currentWord.word,
-            definition: currentWord.definition,
-            iteration: iterationCount,
-            learned: known ? "known" : "unknown",
-            direction: studyMode,
+        // Convert to Japan Standard Time (JST)
+        const options = { timeZone: "Asia/Tokyo", hour12: false };
+        const dateFormatter = new Intl.DateTimeFormat("en-CA", {
+          ...options,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
         });
+        const timeFormatter = new Intl.DateTimeFormat("en-CA", {
+          ...options,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      
+        const formattedDate = dateFormatter.format(now); // e.g., "2025-01-11"
+        const formattedTime = timeFormatter.format(now); // e.g., "09:30:45"
+      
+        if (typeof iterationCount === "undefined" || iterationCount === null) {
+          console.error("Error: iterationCount is not defined or initialized.");
+          return;
+        }
+      
+        // Add a new entry to the studyData array
+        studyData.push({
+          participant: participantNumber,
+          date: formattedDate, // Use JST date
+          time: formattedTime, // Use JST time
+          word: currentWord.word,
+          definition: currentWord.definition,
+          iteration: iterationCount,
+          learned: known ? "known" : "unknown",
+          direction: studyMode,
+          language: "English", // Add the language field
+        });
+      
         // If the word is not known, push it back to the list
         if (!known) {
-            notLearnedWords.push(currentWord);
+          notLearnedWords.push(currentWord);
         }
-    
+      
         // Load the next word
         loadNextWord();
-               
-    }
-
+      }
+      
 });
