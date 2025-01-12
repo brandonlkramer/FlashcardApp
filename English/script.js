@@ -7,14 +7,64 @@ document.addEventListener("DOMContentLoaded", () => {
         messagingSenderId: "66602586657",
         appId: "1:66602586657:web:f0097f216ddfb7464f0960",
         measurementId: "G-F7F23VKHC8"
-      };
-  
+    };
+
     firebase.initializeApp(firebaseConfig);
-  
+
     const db = firebase.firestore();
     console.log("Firebase and Firestore initialized:", db);
-  
-    
+
+    // Global Variables
+    let participantNumber = null;
+
+    // Function to extract query parameters from the URL
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // DOM Elements
+    const registrationScreen = document.getElementById("registration-screen");
+    const welcomeScreen = document.getElementById("welcome-screen");
+    const participantInput = document.getElementById("participant-number");
+
+    // Check if participant number is in the URL
+    const participant = getQueryParam("participant");
+    if (participant) {
+        // If participant is in the URL, skip input
+        participantNumber = participant; // Assign globally
+        console.log("Participant number from URL:", participant);
+
+        // Skip the registration screen
+        registrationScreen.classList.add("hidden");
+        registrationScreen.classList.remove("active");
+        welcomeScreen.classList.remove("hidden");
+        welcomeScreen.classList.add("active");
+    } else {
+        // If no participant number is in the URL, show the input form
+        registrationScreen.classList.remove("hidden");
+        registrationScreen.classList.add("active");
+    }
+
+    // Event Listener for manual participant number submission
+    document.getElementById("submit-participant-number").addEventListener("click", () => {
+        const input = participantInput.value.trim(); // Get value and remove spaces
+
+        if (!input) {
+            alert("Please enter a valid participant number.");
+            return;
+        }
+
+        participantNumber = input; // Assign globally
+        console.log("Participant number entered manually:", participantNumber);
+
+        // Hide the registration screen and show the welcome screen
+        registrationScreen.classList.add("hidden");
+        registrationScreen.classList.remove("active");
+        welcomeScreen.classList.remove("hidden");
+        welcomeScreen.classList.add("active");
+    });
+        
     // Variables
     const words = [
         { word: "ADVERN", definition: "A multi-purpose saw used in various construction industries." },
@@ -28,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let studyMode = "meaningRecall"; // Default study mode
     let notLearnedWords = [...words];
     let currentWord = null;
-    let participantNumber = null;
     let iterationCount = 0; // Track the number of iterations
     let studyData = []; // Array to store study data
 
@@ -37,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Not Learned Words:", notLearnedWords);
 
     // DOM Elements
-    const welcomeScreen = document.getElementById("welcome-screen");
     const studyScreen = document.getElementById("study-screen");
     const answerScreen = document.getElementById("answer-screen");
     const promptDiv = document.getElementById("prompt");
