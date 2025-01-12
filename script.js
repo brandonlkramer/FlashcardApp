@@ -323,8 +323,10 @@ function startStudy(mode) {
             notLearnedWords.push(currentWord);
         }
     
-        // Load the next word
-        loadNextWord();
+        setTimeout(() => {
+            loadNextWord();
+        }, 50); // Adds a 50ms delay
+        
     }
     
       
