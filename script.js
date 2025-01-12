@@ -142,47 +142,81 @@ function startStudy(mode) {
   }
   
 
-    function loadNextWord() {
-        if (notLearnedWords.length === 0) {
-          alert("All words reviewed!");
-          console.log("Saving data to server:", studyData);
-          saveDataToServer(studyData);
-      
-          // Reset screens
-          answerScreen.classList.remove("active");
-          answerScreen.classList.add("hidden");
-          studyScreen.classList.remove("active");
-          studyScreen.classList.add("hidden");
-          welcomeScreen.classList.remove("hidden");
-          welcomeScreen.classList.add("active");
-      
-          // Reset data for future study sessions
-          notLearnedWords = [...words];
-          currentWord = null;
-          iterationCount = 0;
-          return;
-        }
-      
-        iterationCount++;
-        console.log("Current Iteration Count:", iterationCount);
-      
-        // Load the next word
-        currentWord = notLearnedWords.shift();
-        console.log("Loaded next word:", currentWord);
-      
-        // Update the prompt text dynamically
-        if (studyMode === "meaningRecall") {
-          promptDiv.textContent = currentWord.word; // Display the word
-        } else if (studyMode === "formRecall") {
-          promptDiv.textContent = currentWord.definition; // Display the definition
-        }
-      
-        // Show the study screen
-        studyScreen.classList.remove("hidden");
-        studyScreen.classList.add("active");
-        answerScreen.classList.remove("active");
-        answerScreen.classList.add("hidden");
-      }
+  function loadNextWord() {
+    if (notLearnedWords.length === 0) {
+      alert("All words reviewed!");
+      console.log("Saving data to server:", studyData);
+      saveDataToServer(studyData);
+  
+      // Reset screens
+      answerScreen.classList.remove("active");
+      answerScreen.classList.add("hidden");
+      studyScreen.classList.remove("active");
+      studyScreen.classList.add("hidden");
+      welcomeScreen.classList.remove("hidden");
+      welcomeScreen.classList.add("active");
+  
+      // Reset data for future study sessions
+      notLearnedWords = [...words];
+      currentWord = null;
+      iterationCount = 0;
+      return;
+    }
+  
+    iterationCount++;
+    console.log("Current Iteration Count:", iterationCount);
+  
+    // Load the next word
+    currentWord = notLearnedWords.shift();
+    console.log("Loaded next word:", currentWord);
+  
+    // Capture the current timestamp in JST for when the word is shown
+    const now = new Date();
+    const options = { timeZone: "Asia/Tokyo", hour12: false };
+    const dateFormatter = new Intl.DateTimeFormat("en-CA", {
+      ...options,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    const timeFormatter = new Intl.DateTimeFormat("en-CA", {
+      ...options,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    const shownDate = dateFormatter.format(now); // e.g., "2025-01-11"
+    const shownTime = timeFormatter.format(now); // e.g., "09:30:45"
+  
+    // Add the shownAt timestamp to the studyData array
+    studyData.push({
+      participant: participantNumber,
+      word: currentWord.word,
+      definition: currentWord.definition,
+      shownAtDate: shownDate, // When the word was shown
+      shownAtTime: shownTime, // Time when shown
+      iteration: iterationCount,
+      direction: studyMode,
+      language: "English", // Language field
+    });
+  
+// Log the current state of studyData
+    console.log("Current studyData array (after loadNextWord):", studyData);
+
+    // Update the prompt text dynamically
+    if (studyMode === "meaningRecall") {
+      promptDiv.textContent = currentWord.word; // Display the word
+    } else if (studyMode === "formRecall") {
+      promptDiv.textContent = currentWord.definition; // Display the definition
+    }
+  
+    // Show the study screen
+    studyScreen.classList.remove("hidden");
+    studyScreen.classList.add("active");
+    answerScreen.classList.remove("active");
+    answerScreen.classList.add("hidden");
+  }
+  
       
       
     
@@ -240,9 +274,9 @@ function startStudy(mode) {
       
     
     
-    function markAsKnown(known) {
+      function markAsKnown(known) {
         const now = new Date();
-        
+      
         // Convert to Japan Standard Time (JST)
         const options = { timeZone: "Asia/Tokyo", hour12: false };
         const dateFormatter = new Intl.DateTimeFormat("en-CA", {
@@ -266,19 +300,22 @@ function startStudy(mode) {
           return;
         }
       
-        // Add a new entry to the studyData array
-        studyData.push({
-          participant: participantNumber,
-          date: formattedDate, // Use JST date
-          time: formattedTime, // Use JST time
-          word: currentWord.word,
-          definition: currentWord.definition,
-          iteration: iterationCount,
-          learned: known ? "known" : "unknown",
-          direction: studyMode,
-          language: "English", // Add the language field
-        });
+        // Find the latest entry in studyData for the current word and add answeredAt
+        const latestEntry = studyData.find(
+          (entry) => entry.word === currentWord.word && entry.iteration === iterationCount
+        );
       
+        if (latestEntry) {
+          latestEntry.answeredAtDate = formattedDate; // When the word was answered
+          latestEntry.answeredAtTime = formattedTime; // Time when answered
+          latestEntry.learned = known ? "known" : "unknown"; // Mark if the word was known or unknown
+
+        // Log the updated studyData array
+          console.log("Updated studyData array (after markAsKnown):", studyData);
+        } else {
+          console.warn("No matching study data entry found for the current word.");
+        }
+
         // If the word is not known, push it back to the list
         if (!known) {
           notLearnedWords.push(currentWord);
@@ -287,5 +324,6 @@ function startStudy(mode) {
         // Load the next word
         loadNextWord();
       }
+      
       
 });
