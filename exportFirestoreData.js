@@ -56,9 +56,20 @@ async function exportData() {
       data.push({ id: doc.id, ...doc.data() });
     });
 
-    // Write data to a CSV file with JST date and time in the filename
+    // Deduplicate data based on unique fields
+    const uniqueData = data.filter((item, index, self) =>
+      index === self.findIndex(other =>
+        other.participant === item.participant &&
+        other.word === item.word &&
+        other.iteration === item.iteration &&
+        other.shownAtDate === item.shownAtDate &&
+        other.shownAtTime === item.shownAtTime
+      )
+    );
+
+    // Write deduplicated data to a CSV file with JST date and time in the filename
     const ws = fs.createWriteStream(filePath);
-    writeToStream(ws, data, { headers: true })
+    writeToStream(ws, uniqueData, { headers: true })
       .on('finish', () => console.log(`Data has been exported to ${filePath}`))
       .on('error', (error) => console.error('Error writing to CSV:', error));
   } catch (error) {

@@ -258,72 +258,75 @@ function startStudy(mode) {
     function saveDataToServer(data) {
         const db = firebase.firestore();
         data.forEach(entry => {
-          db.collection("study_data")
-            .add({
-              ...entry,
-              language: "English" // Add the language field
-            })
-            .then(() => {
-              console.log("Data saved to Firebase:", entry);
-            })
-            .catch((error) => {
-              console.error("Error saving to Firebase:", error);
-            });
+            db.collection("study_data")
+                .add({
+                    participant: entry.participant,
+                    word: entry.word,
+                    definition: entry.definition,
+                    shownAtDate: entry.shownAtDate,
+                    shownAtTime: entry.shownAtTime,
+                    iteration: entry.iteration,
+                    direction: entry.direction,
+                    language: "English", // Hardcoded
+                    answeredAtDate: entry.answeredAtDate || null,
+                    answeredAtTime: entry.answeredAtTime || null,
+                    learned: entry.learned || null
+                })
+                .then(() => {
+                    console.log("Data saved to Firebase:", entry);
+                })
+                .catch((error) => {
+                    console.error("Error saving to Firebase:", error);
+                });
         });
-      }
+    }
+    
       
     
     
-      function markAsKnown(known) {
+    function markAsKnown(known) {
         const now = new Date();
-      
+    
         // Convert to Japan Standard Time (JST)
         const options = { timeZone: "Asia/Tokyo", hour12: false };
         const dateFormatter = new Intl.DateTimeFormat("en-CA", {
-          ...options,
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
+            ...options,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
         });
         const timeFormatter = new Intl.DateTimeFormat("en-CA", {
-          ...options,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
+            ...options,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
         });
-      
-        const formattedDate = dateFormatter.format(now); // e.g., "2025-01-11"
-        const formattedTime = timeFormatter.format(now); // e.g., "09:30:45"
-      
-        if (typeof iterationCount === "undefined" || iterationCount === null) {
-          console.error("Error: iterationCount is not defined or initialized.");
-          return;
-        }
-      
-        // Find the latest entry in studyData for the current word and add answeredAt
+    
+        const formattedDate = dateFormatter.format(now);
+        const formattedTime = timeFormatter.format(now);
+    
+        // Update the most recent study data entry for the current word
         const latestEntry = studyData.find(
-          (entry) => entry.word === currentWord.word && entry.iteration === iterationCount
+            (entry) => entry.word === currentWord.word && entry.iteration === iterationCount
         );
-      
+    
         if (latestEntry) {
-          latestEntry.answeredAtDate = formattedDate; // When the word was answered
-          latestEntry.answeredAtTime = formattedTime; // Time when answered
-          latestEntry.learned = known ? "known" : "unknown"; // Mark if the word was known or unknown
-
-        // Log the updated studyData array
-          console.log("Updated studyData array (after markAsKnown):", studyData);
+            latestEntry.answeredAtDate = formattedDate; // Date when answered
+            latestEntry.answeredAtTime = formattedTime; // Time when answered
+            latestEntry.learned = known ? "known" : "unknown"; // Known or unknown
         } else {
-          console.warn("No matching study data entry found for the current word.");
+            console.warn("No matching study data entry found for the current word.");
         }
-
+    
         // If the word is not known, push it back to the list
         if (!known) {
-          notLearnedWords.push(currentWord);
+            notLearnedWords.push(currentWord);
         }
-      
+    
         // Load the next word
         loadNextWord();
-      }
+    }
+    
       
       
 });
