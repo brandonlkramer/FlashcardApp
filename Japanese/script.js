@@ -8,11 +8,23 @@ document.addEventListener("DOMContentLoaded", () => {
         appId: "1:66602586657:web:f0097f216ddfb7464f0960",
         measurementId: "G-F7F23VKHC8"
     };
-
+    
     firebase.initializeApp(firebaseConfig);
-
+    
+    // 🔹 Add Authentication
+    const auth = firebase.auth();
+    
+    auth.signInAnonymously()
+      .then(() => {
+        console.log("Signed in anonymously");
+      })
+      .catch((error) => {
+        console.error("Error signing in:", error);
+      });
+    
     const db = firebase.firestore();
     console.log("Firebase and Firestore initialized:", db);
+    
 
     // Global Variables
     let participantNumber = null;
