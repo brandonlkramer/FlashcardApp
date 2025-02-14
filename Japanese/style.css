@@ -79,3 +79,20 @@ button:hover {
 #unknown:hover {
     background-color: darkred;
 }
+
+.return-button {
+    background-color: #d3d3d3; /* Light gray */
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px; /* Space above */
+    border-radius: 5px;
+    display: block; /* Ensure it takes a full line */
+    text-align: center;
+}
+
+.return-button:hover {
+    background-color: #a9a9a9; /* Darker gray on hover */
+}
