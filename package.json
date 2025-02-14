@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "fast-csv": "^5.0.2",
-    "firebase": "^11.1.0",
+    "firebase": "^11.3.1",
     "firebase-admin": "^13.0.2"
   }
 }
