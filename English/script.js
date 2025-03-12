@@ -160,7 +160,25 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Unknown button clicked");
         markAsKnown(false); // Word is marked as "unknown"
     });
+
+        // Function to return to the welcome screen
+        function returnToMainScreen() {
+            studyScreen.classList.add("hidden");
+            studyScreen.classList.remove("active");
+            answerScreen.classList.add("hidden");
+            answerScreen.classList.remove("active");
+            welcomeScreen.classList.remove("hidden");
+            welcomeScreen.classList.add("active");
     
+            // Reset study progress
+            notLearnedWords = [...words];
+            currentWord = null;
+            iterationCount = 0;
+        }
+    
+        // Event listeners for return buttons
+        returnToMainStudyBtn.addEventListener("click", returnToMainScreen);
+        returnToMainAnswerBtn.addEventListener("click", returnToMainScreen);
 
     // Functions// Fisher-Yates Shuffle Algorithm
 function shuffle(array) {
