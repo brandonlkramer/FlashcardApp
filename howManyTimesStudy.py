@@ -11,13 +11,19 @@ latest_file = os.path.join(folder_path, csv_files[0]) if csv_files else None
 if latest_file:
     # Load the CSV file
     df = pd.read_csv(latest_file)
-    df.columns = df.columns.str.strip()  # Remove spaces from column names
+    df.columns = df.columns.astype(str).str.strip()  # Normalize column names
+
+    # Debugging: Print column names
+    print(f"Columns in CSV: {df.columns.tolist()}")
+    print("Column representations:", [repr(col) for col in df.columns])  # Reveals hidden characters
 
     # Check if the required columns exist
     required_columns = {"participant", "shownAtDate"}
-    if not required_columns.issubset(set(df.columns)):
+    actual_columns = {col.lower(): col for col in df.columns}  # Normalize for case-insensitive matching
+
+    if not required_columns.issubset(set(actual_columns.values())):
         print("Error: 'participant' or 'shownAtDate' column missing in CSV file.")
-        print("Found columns:", df.columns)
+        print("Found columns:", df.columns.tolist())
         exit()
 
     # Convert shownAtDate to datetime format
